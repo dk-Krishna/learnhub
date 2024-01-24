@@ -87,6 +87,8 @@ const Home = () => {
         <video
           src={introVideo}
           autoPlay
+          muted
+          loop
           controls
           controlsList="nodownload nofullscreen noremoteplayback"
           disablePictureInPicture
