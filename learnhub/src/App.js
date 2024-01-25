@@ -12,6 +12,10 @@ import ResetPassword from './components/Auth/ResetPassword.jsx';
 import Contact from './components/Contact/Contact.jsx';
 import Request from './components/Request/Request.jsx';
 import About from './components/About/About.jsx';
+import PaymentSuccess from './components/Payments/PaymentSuccess.jsx';
+import PaymentFail from './components/Payments/PaymentFail.jsx';
+import Subscribe from './components/Payments/Subscribe.jsx';
+import NotFound from './components/Layout/NotFound/NotFound.jsx';
 import Footer from './components/Layout/Footer/Footer.jsx';
 
 function App() {
@@ -31,6 +35,10 @@ function App() {
           <Route path='/contact' element={<Contact />} />
           <Route path='/request' element={<Request />} />
           <Route path='/about' element={<About />} />
+          <Route path='/subscribe' element={<Subscribe />} />
+          <Route path='/paymentsuccess' element={<PaymentSuccess />} />
+          <Route path='/paymentfail' element={<PaymentFail />} />
+          <Route path='*' element={<NotFound />} />
 
         </Routes>
         <Footer />
