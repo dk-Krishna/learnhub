@@ -16,6 +16,7 @@ import PaymentSuccess from './components/Payments/PaymentSuccess.jsx';
 import PaymentFail from './components/Payments/PaymentFail.jsx';
 import Subscribe from './components/Payments/Subscribe.jsx';
 import CoursePage from './components/CoursePage/CoursePage.jsx';
+import Profile from './components/Profile/Profile.jsx';
 import NotFound from './components/Layout/NotFound/NotFound.jsx';
 import Footer from './components/Layout/Footer/Footer.jsx';
 
@@ -43,6 +44,7 @@ function App() {
           <Route path="/subscribe" element={<Subscribe />} />
           <Route path="/paymentsuccess" element={<PaymentSuccess />} />
           <Route path="/paymentfail" element={<PaymentFail />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
