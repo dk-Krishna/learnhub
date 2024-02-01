@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-// importing components
+// importing user components
 import Header from './components/Layout/Header/Header.jsx';
 import Home from './components/Home/Home.jsx';
 import Courses from './components/Courses/Courses.jsx';
@@ -17,8 +17,16 @@ import PaymentFail from './components/Payments/PaymentFail.jsx';
 import Subscribe from './components/Payments/Subscribe.jsx';
 import CoursePage from './components/CoursePage/CoursePage.jsx';
 import Profile from './components/Profile/Profile.jsx';
+import ChangePassword from './components/Profile/ChangePassword.jsx';
+import UpdateProfile from './components/Profile/UpdateProfile.jsx';
 import NotFound from './components/Layout/NotFound/NotFound.jsx';
 import Footer from './components/Layout/Footer/Footer.jsx';
+
+// importing admin components
+import Dashboard from './components/Admin/Dashboard/Dashboard.jsx';
+import CreateCourse from './components/Admin/CreateCourse/CreateCourse.jsx';
+import AdminCourses from './components/Admin/AdminCourses/AdminCourses.jsx';
+import Users from './components/Admin/Users/Users.jsx';
 
 function App() {
   // To prevent to save using right click
@@ -45,7 +53,15 @@ function App() {
           <Route path="/paymentsuccess" element={<PaymentSuccess />} />
           <Route path="/paymentfail" element={<PaymentFail />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/changepassword" element={<ChangePassword />} />
+          <Route path="/updateprofile" element={<UpdateProfile />} />
           <Route path="*" element={<NotFound />} />
+
+          {/* ADMIN ROUTES */}
+          <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/createcourse" element={<CreateCourse />} />
+          <Route path="/admin/courses" element={<AdminCourses />} />
+          <Route path="/admin/users" element={<Users />} />
         </Routes>
         <Footer />
       </Router>
@@ -55,4 +71,4 @@ function App() {
 
 export default App;
 
-// Video-11 [timeStamp: 00:00]
+// Video-14 [timeStamp: 00:00]
