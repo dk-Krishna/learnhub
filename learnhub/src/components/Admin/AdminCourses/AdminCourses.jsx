@@ -13,7 +13,7 @@ const AdminCourses = () => {
       minH={'100vh'}
       templateColumns={['1fr', '5fr 1fr']}
     >
-      <Box></Box>
+      <Box>Admin Courses</Box>
       <Sidebar />
     </Grid>
   );
