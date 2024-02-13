@@ -8,7 +8,7 @@ export const getAllCourses = cathAsynError(async (req, res, next) => {
   const courses = await findAllCourses();
 
   if (!courses || courses.length === 0) {
-    throw new ErrorHandler("Courses are empty", 200);
+    return next(new ErrorHandler("Courses are empty", 200));
   }
 
   return res.status(200).json({
@@ -21,7 +21,7 @@ export const createCourse = cathAsynError(async (req, res, next) => {
   const { title, description, category, createdBy } = req.body;
 
   if (!title || !description || !category || !createdBy) {
-    throw new ErrorHandler("Please enter all fields", 400);
+    return next(new ErrorHandler("Please enter all fields", 400));
   }
 
   // const file = req.file;

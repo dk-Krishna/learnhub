@@ -1,5 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 
 import { config } from "dotenv";
 config({
@@ -16,6 +17,7 @@ const app = express();
 // using middlewares
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.send("Testing api fine...");
@@ -30,4 +32,4 @@ export default app;
 // CUSTOM ERROR HANDLER
 app.use(ErrorMiddleware);
 
-// Video-20 [timeStamp: 00:00]
+// Video-30 [timeStamp: 00:00]
