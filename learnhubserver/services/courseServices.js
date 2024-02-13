@@ -8,4 +8,8 @@ export const courseServices = {
   createACourse: async (insertObj) => {
     return await Course.create(insertObj);
   },
+
+  findCourse: async (courseId) => {
+    return await Course.findById(courseId);
+  },
 };

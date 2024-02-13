@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { isObjectIdOrHexString } from "mongoose";
 
 const courseSchema = new mongoose.Schema({
   title: {

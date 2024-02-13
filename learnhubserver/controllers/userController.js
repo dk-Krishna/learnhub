@@ -2,10 +2,13 @@ import { cathAsynError } from "../middlewares/cathAsyncError.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
 import crypto from "crypto";
 import { userServices } from "../services/userServices.js";
+import { courseServices } from "../services/courseServices.js";
 import { sendToken } from "../utils/sendToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
 const { createUser, checkUserExists, findUser, checkUserExistsWithResetToken } =
   userServices;
+
+const { findCourse } = courseServices;
 
 export const signup = cathAsynError(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -187,5 +190,67 @@ export const resetPassword = cathAsynError(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: "Profile password changed successfully.",
+  });
+});
+
+export const addToPlaylist = cathAsynError(async (req, res, next) => {
+  const user = await findUser(req.userId);
+  if (!user) {
+    return next(new ErrorHandler("Login first...", 401));
+  }
+
+  const course = await findCourse(req.body.courseId);
+  if (!course) {
+    return next(new ErrorHandler("Course not found.", 401));
+  }
+
+  const itemExists = user.playlist.find((item) => {
+    if (item.course.toString() === course._id.toString()) {
+      return true;
+    }
+  });
+
+  if (itemExists) {
+    return next(new ErrorHandler("Item already exist.", 409));
+  }
+
+  user.playlist.push({
+    course: course._id,
+    poster: course.poster.url,
+  });
+
+  await user.save();
+
+  return res.status(200).json({
+    success: true,
+    course,
+    message: "Added to playlist.",
+  });
+});
+
+export const removeFromPlaylist = cathAsynError(async (req, res, next) => {
+  const user = await findUser(req.userId);
+  if (!user) {
+    return next(new ErrorHandler("Login first...", 401));
+  }
+
+  const course = await findCourse(req.query.courseId);
+  if (!course) {
+    return next(new ErrorHandler("Course not found.", 401));
+  }
+
+  const newPlaylist = user.playlist.filter((item) => {
+    if (item.course.toString() !== course._id.toString()) {
+      return true;
+    }
+  });
+
+  user.playlist = newPlaylist;
+  await user.save();
+
+  return res.status(200).json({
+    success: true,
+    course,
+    message: "Removed from playlist.",
   });
 });
