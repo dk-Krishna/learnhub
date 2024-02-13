@@ -65,7 +65,7 @@ const courseSchema = new mongoose.Schema({
 
   createdBy: {
     type: String,
-    required: [true, "Please enter course creator name"],
+    required: [true, "Please enter course creator name"], 
   },
 
   createdAt: {
