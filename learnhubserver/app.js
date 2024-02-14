@@ -32,4 +32,4 @@ export default app;
 // CUSTOM ERROR HANDLER
 app.use(ErrorMiddleware);
 
-// Video-31 [timeStamp: 00:00]
+// Video-32 [timeStamp: 00:00]

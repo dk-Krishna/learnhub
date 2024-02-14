@@ -16,3 +16,15 @@ export const isAuthenticated = cathAsynError(async (req, res, next) => {
 
   next();
 });
+
+export const authorizedAdmin = (req, res, next) => {
+  if (req.user.role !== "admin") {
+    return next(
+      new ErrorHandler(
+        `${req.user.role} is not allowed to access this resources.`
+      )
+    );
+  }
+
+  next();
+};

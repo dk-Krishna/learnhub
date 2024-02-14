@@ -5,15 +5,25 @@ import { userServices } from "../services/userServices.js";
 import { courseServices } from "../services/courseServices.js";
 import { sendToken } from "../utils/sendToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
-const { createUser, checkUserExists, findUser, checkUserExistsWithResetToken } =
-  userServices;
+import cloudinary from "cloudinary";
+import getDataUri from "../utils/dataUri.js";
+const {
+  createUser,
+  checkUserExists,
+  findUser,
+  checkUserExistsWithResetToken,
+  fetchAllUsers,
+  findAndDelete,
+  deleteMe,
+} = userServices;
 
 const { findCourse } = courseServices;
 
 export const signup = cathAsynError(async (req, res, next) => {
   const { name, email, password } = req.body;
+  const file = req.file;
 
-  if (!name || !email || !password) {
+  if (!name || !email || !password || !file) {
     return next(new ErrorHandler("Please enter all fields", 400));
   }
 
@@ -24,16 +34,17 @@ export const signup = cathAsynError(async (req, res, next) => {
     );
   }
 
-  // const file = req.file;
   // Upload file on cloudinary
+  const fileUri = getDataUri(file);
+  const myCloud = await cloudinary.v2.uploader.upload(fileUri.content);
 
   const newUser = await createUser({
     name,
     email,
     password,
     avatar: {
-      public_id: "temp_id",
-      url: "temp_url",
+      public_id: myCloud.public_id,
+      url: myCloud.secure_url,
     },
   });
 
@@ -84,6 +95,29 @@ export const getMyProfile = cathAsynError(async (req, res, next) => {
   });
 });
 
+export const deleteMyProfile = cathAsynError(async (req, res, next) => {
+  const user = await findUser(req.userId);
+  if (!user) {
+    return next(new ErrorHandler("Login first...", 401));
+  }
+
+  await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+
+  // Cancel Subscription
+
+  await deleteMe(user._id);
+
+  return res
+    .status(200)
+    .cookie("token", null, {
+      expires: new Date(Date.now()),
+    })
+    .json({
+      success: true,
+      message: `Your profile deleted successfully.`,
+    });
+});
+
 export const changePassword = cathAsynError(async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
 
@@ -132,7 +166,20 @@ export const updateProfile = cathAsynError(async (req, res, next) => {
 
 export const updateProfilePicture = cathAsynError(async (req, res, next) => {
   // CLOUDINARY
+  const user = await findUser(req.userId);
+  if (!user) {
+    return next(new ErrorHandler("Login first...", 401));
+  }
 
+  await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+
+  const file = req.file;
+  const fileUri = getDataUri(file);
+
+  const myCloud = await cloudinary.v2.uploader.upload(fileUri.content);
+
+  user.avatar.public_id = myCloud.public_id;
+  user.avatar.url = myCloud.secure_url;
   user.save();
 
   return res.status(200).json({
@@ -252,5 +299,77 @@ export const removeFromPlaylist = cathAsynError(async (req, res, next) => {
     success: true,
     course,
     message: "Removed from playlist.",
+  });
+});
+
+// ADMIN CONTROLLER
+export const getAllUsers = cathAsynError(async (req, res, next) => {
+  const user = await findUser(req.userId);
+  if (!user) {
+    return next(new ErrorHandler("Login first...", 401));
+  }
+
+  const users = await fetchAllUsers();
+  if (!users || users.length == 0) {
+    return next(new ErrorHandler("Users not found.", 401));
+  }
+
+  return res.status(200).json({
+    success: true,
+    users,
+  });
+});
+
+export const updateUserRole = cathAsynError(async (req, res, next) => {
+  const user = await findUser(req.userId);
+  if (!user) {
+    return next(new ErrorHandler("Login first...", 401));
+  }
+
+  const newUser = await findUser(req.params.userId);
+  if (!newUser) {
+    return next(new ErrorHandler("User not found.", 401));
+  }
+
+  if (user._id.toString() === newUser._id.toString()) {
+    return next(new ErrorHandler("You can't change your own role.", 401));
+  }
+
+  if (newUser.role === "admin") {
+    newUser.role = "user";
+  } else {
+    newUser.role = "admin";
+  }
+
+  await newUser.save();
+
+  return res.status(200).json({
+    success: true,
+    message: `${user.name}'s role changed to ${newUser.role} successfully.`,
+  });
+});
+
+export const deleteUser = cathAsynError(async (req, res, next) => {
+  const user = await findUser(req.userId);
+  if (!user) {
+    return next(new ErrorHandler("Login first...", 401));
+  }
+
+  if (user._id.toString() === req.params.userId.toString()) {
+    return next(new ErrorHandler("You can't delete yourself.", 401));
+  }
+
+  await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+
+  // Cancel Subscription
+
+  const deleteUser = await findAndDelete(req.params.userId);
+  if (!deleteUser) {
+    return next(new ErrorHandler("User not found.", 401));
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: `User ${deleteUser.name} deleted by admin.`,
   });
 });

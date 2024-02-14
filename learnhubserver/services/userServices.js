@@ -9,6 +9,10 @@ export const userServices = {
     return await User.findOne({ email }).select("+password");
   },
 
+  deleteMe: async (userId) => {
+    return await User.findByIdAndDelete(userId);
+  },
+
   findUser: async (userId) => {
     return await User.findById(userId).select("+password");
   },
@@ -20,5 +24,14 @@ export const userServices = {
         $gt: Date.now(),
       },
     }).select("+password");
+  },
+
+  // ADMIN SERVICES
+  fetchAllUsers: async () => {
+    return await User.find();
+  },
+
+  findAndDelete: async (userId) => {
+    return await User.findByIdAndDelete(userId);
   },
 };
