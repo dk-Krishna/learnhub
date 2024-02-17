@@ -9,7 +9,11 @@ import {
 } from "../controllers/courseController.js";
 
 import singleUpload from "../middlewares/multer.js";
-import { authorizedAdmin, isAuthenticated } from "../middlewares/auth.js";
+import {
+  authorizedAdmin,
+  authorizedSubscribers,
+  isAuthenticated,
+} from "../middlewares/auth.js";
 
 export default Express.Router()
 
@@ -23,7 +27,12 @@ export default Express.Router()
     createCourse
   )
 
-  .get("/getCourseLectures/:courseId", isAuthenticated, getCourseLectures)
+  .get(
+    "/getCourseLectures/:courseId",
+    isAuthenticated,
+    authorizedSubscribers,
+    getCourseLectures
+  )
 
   .post(
     "/addCourseLecture/:courseId",
@@ -45,4 +54,4 @@ export default Express.Router()
     isAuthenticated,
     authorizedAdmin,
     deleteLecture
-  )
+  );

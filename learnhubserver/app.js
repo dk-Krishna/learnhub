@@ -12,6 +12,7 @@ import courseRoutes from "./routes/courseRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import ErrorMiddleware from "./middlewares/Error.js";
 import payment from "./routes/paymentRoutes.js";
+import otherRoutes from "./routes/otherRoutes.js";
 
 const app = express();
 
@@ -28,10 +29,11 @@ app.get("/", (req, res) => {
 app.use("/api/v1/course", courseRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/payment", payment);
+app.use("/api/v1/other", otherRoutes);
 
 export default app;
 
 // CUSTOM ERROR HANDLER
 app.use(ErrorMiddleware);
 
-// Video-35 [timeStamp: 00:00]
+// Video-39 [timeStamp: 00:00]
