@@ -1,5 +1,6 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 
 // importing user components
 import Header from './components/Layout/Header/Header.jsx';
@@ -27,6 +28,9 @@ import Dashboard from './components/Admin/Dashboard/Dashboard.jsx';
 import CreateCourse from './components/Admin/CreateCourse/CreateCourse.jsx';
 import AdminCourses from './components/Admin/AdminCourses/AdminCourses.jsx';
 import Users from './components/Admin/Users/Users.jsx';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearError, clearMessage } from './redux/reducers/userReducer.js';
+import { loadUser } from './redux/actions/user.js';
 
 function App() {
   // To prevent to save using right click
@@ -34,10 +38,31 @@ function App() {
     e.preventDefault();
   });
 
+  const { isAuthenticated, user, error, message } = useSelector(
+    state => state.user
+  );
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
+    }
+
+    if (message) {
+      toast.success(message);
+      dispatch(clearMessage());
+    }
+  }, [dispatch, error, message]);
+
+  useEffect(() => {
+    dispatch(loadUser());
+  }, [dispatch]);
+
   return (
     <Fragment>
       <Router>
-        <Header />
+        <Header isAuthenticated={isAuthenticated} user={user} />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
@@ -64,6 +89,7 @@ function App() {
           <Route path="/admin/users" element={<Users />} />
         </Routes>
         <Footer />
+        <Toaster />
       </Router>
     </Fragment>
   );

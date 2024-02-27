@@ -23,12 +23,7 @@ const LinkButton = ({ url = '/', title = 'Home', onClose }) => (
   </Link>
 );
 
-const isAuthenticated = true;
-const user = {
-  role: 'admin',
-};
-
-const Header = () => {
+const Header = ({ isAuthenticated = false, user }) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   const logoutHandler = () => {
@@ -63,8 +58,16 @@ const Header = () => {
           <DrawerBody>
             <VStack alignItems={'flex-start'} spacing={'4'}>
               <LinkButton onClose={onClose} url="/" title="Home" />
-              <LinkButton onClose={onClose} url="/courses" title="Brose All Courses" />
-              <LinkButton onClose={onClose} url="/request" title="Request a Course" />
+              <LinkButton
+                onClose={onClose}
+                url="/courses"
+                title="Brose All Courses"
+              />
+              <LinkButton
+                onClose={onClose}
+                url="/request"
+                title="Request a Course"
+              />
               <LinkButton onClose={onClose} url="/contact" title="Contact Us" />
               <LinkButton onClose={onClose} url="/about" title="About" />
             </VStack>
