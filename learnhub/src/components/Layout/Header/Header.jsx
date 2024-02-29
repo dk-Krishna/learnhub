@@ -14,7 +14,9 @@ import React, { Fragment } from 'react';
 
 // importing icons
 import { RiDashboardFill, RiLogoutBoxLine, RiMenu5Fill } from 'react-icons/ri';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { logout } from '../../../redux/actions/user';
 
 // inner component
 const LinkButton = ({ url = '/', title = 'Home', onClose }) => (
@@ -26,9 +28,10 @@ const LinkButton = ({ url = '/', title = 'Home', onClose }) => (
 const Header = ({ isAuthenticated = false, user }) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
+  const dispatch = useDispatch();
   const logoutHandler = () => {
-    console.log('Logout Successfully...');
     onClose();
+    dispatch(logout());
   };
 
   return (
