@@ -130,7 +130,7 @@ function App() {
                 path="/updateprofile"
                 element={
                   <ProtectedRoute isAuthenticated={isAuthenticated}>
-                    <UpdateProfile />
+                    <UpdateProfile user={user} />
                   </ProtectedRoute>
                 }
               />
@@ -196,4 +196,4 @@ function App() {
 
 export default App;
 
-// Video-43 [timeStamp: 00:00]
+// Video-45 [timeStamp: 00:00]

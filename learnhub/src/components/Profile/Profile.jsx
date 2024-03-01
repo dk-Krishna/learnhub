@@ -18,10 +18,15 @@ import {
   VStack,
   useDisclosure,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 import { fileUploadCss } from '../Auth/Signup';
+import { updateProfilePicture } from '../../redux/actions/profile';
+import { useDispatch, useSelector } from 'react-redux';
+import { loadUser } from '../../redux/actions/user';
+import toast from 'react-hot-toast';
+import { clearError, clearMessage } from '../../redux/reducers/userReducer';
 
 const Profile = ({ user }) => {
   const removeFromPlaylistHandler = id => {
@@ -30,9 +35,29 @@ const Profile = ({ user }) => {
 
   const { isOpen, onClose, onOpen } = useDisclosure();
 
-  const changeImageSubmitHandler = (e, image) => {
+  const dispatch = useDispatch();
+  const { loading, message, error } = useSelector(state => state.profile);
+  const changeImageSubmitHandler = async (e, image) => {
     e.preventDefault();
+    const myForm = new FormData();
+
+    myForm.append('file', image);
+
+    await dispatch(updateProfilePicture(myForm));
+    dispatch(loadUser());
   };
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
+    }
+
+    if (message) {
+      toast.message(message);
+      dispatch(clearMessage());
+    }
+  }, [dispatch, error, message]);
 
   return (
     <Container minH={'95vh'} maxW={'container.lg'} py={'8'}>
@@ -141,6 +166,7 @@ const Profile = ({ user }) => {
       <ChangePhotoBox
         isOpen={isOpen}
         onClose={onClose}
+        loading={loading}
         changeImageSubmitHandler={changeImageSubmitHandler}
       />
     </Container>
@@ -149,7 +175,12 @@ const Profile = ({ user }) => {
 
 export default Profile;
 
-const ChangePhotoBox = ({ isOpen, onClose, changeImageSubmitHandler }) => {
+const ChangePhotoBox = ({
+  isOpen,
+  onClose,
+  changeImageSubmitHandler,
+  loading,
+}) => {
   const [avatar, setAvatar] = useState('');
   const [image, setImage] = useState('');
 
@@ -190,6 +221,7 @@ const ChangePhotoBox = ({ isOpen, onClose, changeImageSubmitHandler }) => {
                 />
 
                 <Button
+                  isLoading={loading}
                   onClick={onClose}
                   colorScheme="yellow"
                   w={'full'}
