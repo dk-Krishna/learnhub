@@ -37,7 +37,7 @@ export const changePassword = (oldPassword, newPassword) => async dispatch => {
   try {
     dispatch(changePasswordRequest());
     const { data } = await axios.put(
-      `${server}/user/updateProfile`,
+      `${server}/user/changePassword`,
       { oldPassword, newPassword },
       {
         headers: {
@@ -57,7 +57,7 @@ export const changePassword = (oldPassword, newPassword) => async dispatch => {
 export const updateProfilePicture = formdata => async dispatch => {
   try {
     dispatch(updateProfilePictureRequest());
-    const { data } = await axios.put(`${server}/user/updateProfile`, formdata, {
+    const { data } = await axios.put(`${server}/user/updateProfilePicture`, formdata, {
       headers: {
         'Content-type': 'multipart/form-data',
       },
