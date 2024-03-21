@@ -1,9 +1,11 @@
 import { Button, Container, Heading, Input, VStack } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateProfile } from '../../redux/actions/profile';
 import { loadUser } from '../../redux/actions/user';
 import { useNavigate } from 'react-router-dom';
+import { clearError, clearMessage } from '../../redux/reducers/profileReducer';
+import toast from 'react-hot-toast';
 
 const UpdateProfile = ({ user }) => {
   const [name, setName] = useState(user.name);
@@ -11,6 +13,7 @@ const UpdateProfile = ({ user }) => {
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
+  const { loading, message, error } = useSelector(state => state.profile);
   const profileHandler = async e => {
     e.preventDefault();
 
@@ -19,7 +22,17 @@ const UpdateProfile = ({ user }) => {
     navigate('/profile');
   };
 
-  const { loading } = useSelector(state => state.profile);
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
+    }
+
+    if (message) {
+      toast.success(message);
+      dispatch(clearMessage());
+    }
+  }, [dispatch, error, message]);
 
   return (
     <Container py={'16'} minH={'90vh'}>

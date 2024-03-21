@@ -54,7 +54,7 @@ const Profile = ({ user }) => {
     }
 
     if (message) {
-      toast.message(message);
+      toast.success(message);
       dispatch(clearMessage());
     }
   }, [dispatch, error, message]);
