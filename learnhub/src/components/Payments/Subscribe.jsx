@@ -6,9 +6,69 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { server } from '../../redux/store';
+import { buySubscription } from '../../redux/actions/subscription.js';
+import toast from 'react-hot-toast';
+import { clearError } from '../../redux/reducers/subscriptionReducer';
 
-const Subscribe = () => {
+// importing images
+import Logo from '../../assets/images/logo.png';
+
+const Subscribe = ({ user }) => {
+  const dispatch = useDispatch();
+  const [key, setKey] = useState('');
+  const { loading, error, subscriptionId } = useSelector(
+    state => state.subscription
+  );
+
+  console.log(subscriptionId);
+
+  const subscriptionHander = async () => {
+    const { data } = await axios.get(`${server}/payment/getRazorpayKey`);
+
+    setKey(data.key);
+    dispatch(buySubscription());
+  };
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
+    }
+
+    if (subscriptionId) {
+      const openPopUp = () => {
+        const options = {
+          key,
+          name: 'LearnHub',
+          description: 'Get access to all premium content',
+          image: Logo,
+          subscription_id: subscriptionId,
+          callback_url: `${server}/payment/paymentVerification`,
+          prefill: {
+            name: user.name,
+            email: user.email,
+            contact: '+91 9325638959',
+          },
+          notes: {
+            address: 'BugBusters at youtube',
+          },
+          theme: {
+            color: '#FFC800',
+          },
+        };
+
+        const razor = new window.Razorpay(options);
+        razor.open();
+      };
+
+      openPopUp();
+    }
+  }, [error, dispatch, key, subscriptionId, user]);
+
   return (
     <Container h={'100vh'} p={'16'}>
       <Heading textAlign={'center'} my={'8'}>
@@ -31,7 +91,13 @@ const Subscribe = () => {
             <Heading>₹299 Only</Heading>
           </VStack>
 
-          <Button colorScheme="yellow" my={'8'} w={'full'}>
+          <Button
+            isLoading={loading}
+            colorScheme="yellow"
+            my={'8'}
+            w={'full'}
+            onClick={subscriptionHander}
+          >
             Buy Now
           </Button>
         </Box>

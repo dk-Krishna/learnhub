@@ -30,6 +30,30 @@ const profileSlice = createSlice({
       state.error = action.payload;
     },
 
+    forgetPasswordRequest: state => {
+      state.loading = true;
+    },
+    forgetPasswordSuccess: (state, action) => {
+      state.loading = false;
+      state.message = action.payload;
+    },
+    forgetPasswordFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
+    resetPasswordRequest: state => {
+      state.loading = true;
+    },
+    resetPasswordSuccess: (state, action) => {
+      state.loading = false;
+      state.message = action.payload;
+    },
+    resetPasswordFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
     updateProfilePictureRequest: state => {
       state.loading = true;
     },
@@ -38,6 +62,18 @@ const profileSlice = createSlice({
       state.message = action.payload;
     },
     updateProfilePictureFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
+    removeFromPlaylistRequest: state => {
+      state.loading = true;
+    },
+    removeFromPlaylistSuccess: (state, action) => {
+      state.loading = false;
+      state.message = action.payload;
+    },
+    removeFromPlaylistFail: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },
@@ -58,9 +94,18 @@ export const {
   changePasswordRequest,
   changePasswordSuccess,
   changePasswordFail,
+  forgetPasswordRequest,
+  forgetPasswordSuccess,
+  forgetPasswordFail,
+  resetPasswordRequest,
+  resetPasswordSuccess,
+  resetPasswordFail,
   updateProfilePictureRequest,
   updateProfilePictureSuccess,
   updateProfilePictureFail,
+  removeFromPlaylistRequest,
+  removeFromPlaylistSuccess,
+  removeFromPlaylistFail,
   clearError,
   clearMessage,
 } = profileSlice.actions;

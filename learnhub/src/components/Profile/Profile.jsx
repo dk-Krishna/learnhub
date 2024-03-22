@@ -22,21 +22,33 @@ import React, { useEffect, useState } from 'react';
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 import { fileUploadCss } from '../Auth/Signup';
-import { updateProfilePicture } from '../../redux/actions/profile';
+import {
+  removeFromPlaylist,
+  updateProfilePicture,
+} from '../../redux/actions/profile';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadUser } from '../../redux/actions/user';
 import toast from 'react-hot-toast';
 import { clearError, clearMessage } from '../../redux/reducers/userReducer';
+import { cancelSubscription } from '../../redux/actions/subscription';
 
 const Profile = ({ user }) => {
-  const removeFromPlaylistHandler = id => {
-    console.log('Removed from playlist.', id);
-  };
-
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   const dispatch = useDispatch();
   const { loading, message, error } = useSelector(state => state.profile);
+  const {
+    loading: subscriptionLoading,
+    message: subscriptionMessage,
+    error: subscriptionError,
+  } = useSelector(state => state.subscription);
+
+  const removeFromPlaylistHandler = async courseId => {
+    console.log('Removed from playlist.', courseId);
+    await dispatch(removeFromPlaylist(courseId));
+    dispatch(loadUser());
+  };
+
   const changeImageSubmitHandler = async (e, image) => {
     e.preventDefault();
     const myForm = new FormData();
@@ -45,6 +57,10 @@ const Profile = ({ user }) => {
 
     await dispatch(updateProfilePicture(myForm));
     dispatch(loadUser());
+  };
+
+  const cancelSubscriptionHandler = () => {
+    dispatch(cancelSubscription());
   };
 
   useEffect(() => {
@@ -57,7 +73,18 @@ const Profile = ({ user }) => {
       toast.success(message);
       dispatch(clearMessage());
     }
-  }, [dispatch, error, message]);
+
+    if (subscriptionError) {
+      toast.error(subscriptionError);
+      dispatch(clearError());
+    }
+
+    if (subscriptionMessage) {
+      toast.success(subscriptionMessage);
+      dispatch(clearMessage());
+      dispatch(loadUser());
+    }
+  }, [dispatch, error, message, subscriptionError, subscriptionMessage]);
 
   return (
     <Container minH={'95vh'} maxW={'container.lg'} py={'8'}>
@@ -99,7 +126,12 @@ const Profile = ({ user }) => {
             <HStack>
               <Text fontWeight={'bold'}>Subscription</Text>
               {user.subscription && user.subscription.status === 'active' ? (
-                <Button color={'red.500'} variant={'unstyled'}>
+                <Button
+                  isLoading={subscriptionLoading}
+                  onClick={cancelSubscriptionHandler}
+                  color={'red.500'}
+                  variant={'unstyled'}
+                >
                   Cancel Subscription
                 </Button>
               ) : (
@@ -151,6 +183,7 @@ const Profile = ({ user }) => {
                 </Link>
 
                 <Button
+                  isLoading={loading}
                   onClick={() => removeFromPlaylistHandler(element.course)}
                   colorScheme="red"
                   variant={'ghost'}

@@ -10,9 +10,11 @@ import React from 'react';
 
 // importing icons
 import { RiCheckboxCircleFill } from 'react-icons/ri';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 const PaymentSuccess = () => {
+  const reference = useSearchParams()[0].get('reference');
+
   return (
     <Container height={'100vh'} p={'16'}>
       <Heading my={'8'} textAlign={'center'}>
@@ -53,7 +55,7 @@ const PaymentSuccess = () => {
           </Button>
         </Link>
 
-        <Heading size={'xs'}> Reference: adflajsfahjsadfhsad</Heading>
+        <Heading size={'xs'}> Reference: {reference}</Heading>
       </VStack>
     </Container>
   );

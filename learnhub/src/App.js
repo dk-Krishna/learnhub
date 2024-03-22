@@ -95,8 +95,28 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/forgetpassword" element={<ForgetPassword />} />
-              <Route path="/resetpassword/:token" element={<ResetPassword />} />
+              <Route
+                path="/forgetpassword"
+                element={
+                  <ProtectedRoute
+                    isAuthenticated={!isAuthenticated}
+                    redirect="/profile"
+                  >
+                    <ForgetPassword />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/resetpassword/:token"
+                element={
+                  <ProtectedRoute
+                    isAuthenticated={!isAuthenticated}
+                    redirect="/profile"
+                  >
+                    <ResetPassword />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/contact" element={<Contact />} />
               <Route path="/request" element={<Request />} />
               <Route path="/about" element={<About />} />
@@ -104,12 +124,12 @@ function App() {
                 path="/subscribe"
                 element={
                   <ProtectedRoute isAuthenticated={isAuthenticated}>
-                    <Subscribe />
+                    <Subscribe user={user} />
                   </ProtectedRoute>
                 }
               />
               <Route path="/paymentsuccess" element={<PaymentSuccess />} />
-              <Route path="/paymentfail" element={<PaymentFail />} />\
+              <Route path="/paymentfail" element={<PaymentFail />} />
               <Route
                 path="/profile"
                 element={
@@ -195,5 +215,5 @@ function App() {
 }
 
 export default App;
-
-// Video-45 [timeStamp: 00:00]
+// Testing-47
+// Video-49 [timeStamp: 00:00]

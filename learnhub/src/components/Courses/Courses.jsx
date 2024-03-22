@@ -9,8 +9,14 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { clearError, clearMessage } from '../../redux/reducers/courseReducer';
+import { getAllCourses } from '../../redux/actions/course';
+import { addToPlaylist } from '../../redux/actions/profile';
+import { loadUser } from '../../redux/actions/user';
 
 const Course = ({
   views,
@@ -21,6 +27,7 @@ const Course = ({
   creator,
   description,
   lectureCount,
+  loading,
 }) => {
   return (
     <VStack className="course" alignItems={['center', 'flex-start']}>
@@ -61,6 +68,7 @@ const Course = ({
         </Link>
 
         <Button
+          isLoading={loading}
           variant={'ghost'}
           colorScheme="yellow"
           onClick={() => addToPlaylistHandler(id)}
@@ -85,8 +93,28 @@ const Courses = () => {
     'Game Development',
   ];
 
-  const addToPlaylistHandler = () => {
+  const dispatch = useDispatch();
+  const { loading, error, courses, message } = useSelector(
+    state => state.course
+  );
+
+  useEffect(() => {
+    dispatch(getAllCourses(category, keyword));
+
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
+    }
+    if (message) {
+      toast.success(message);
+      dispatch(clearMessage());
+    }
+  }, [dispatch, category, keyword, error, message]);
+
+  const addToPlaylistHandler = async courseId => {
     console.log('Added To Playlist..');
+    await dispatch(addToPlaylist(courseId));
+    dispatch(loadUser());
   };
 
   return (
@@ -123,18 +151,26 @@ const Courses = () => {
         justifyContent={['flex-start', 'space-evenly']}
         alignItems={['center', 'flex-start']}
       >
-        <Course
-          title={'Sample'}
-          description={'Sample'}
-          views={23}
-          imageSrc={
-            'https://cdn.pixabay.com/photo/2023/10/30/02/34/woman-8351528_1280.jpg'
-          }
-          id={'Sample'}
-          creator={'Sample Boy'}
-          lectureCount={2}
-          addToPlaylistHandler={addToPlaylistHandler}
-        />
+        {courses.length > 0 ? (
+          courses.map(item => (
+            <Course
+              key={item._id}
+              title={item.title}
+              description={item.description}
+              views={item.views}
+              imageSrc={item.poster.url}
+              id={item._id}
+              creator={item.category}
+              lectureCount={item.numOfVideos}
+              addToPlaylistHandler={addToPlaylistHandler}
+              loading={loading}
+            />
+          ))
+        ) : (
+          <Heading opacity={0.5} mt={'4'}>
+            Courses Not Found!
+          </Heading>
+        )}
       </Stack>
     </Container>
   );
