@@ -9,10 +9,6 @@ import getDataUri from "../utils/dataUri.js";
 export const getAllCourses = cathAsynError(async (req, res, next) => {
   const courses = await findAllCourses();
 
-  if (!courses || courses.length === 0) {
-    return next(new ErrorHandler("Courses are empty", 200));
-  }
-
   return res.status(200).json({
     success: true,
     courses,
